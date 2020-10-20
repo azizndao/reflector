@@ -93,21 +93,11 @@ public abstract class DaoStore {
   }
 
   private static Object invokeDeleteMethod(Object[] args) throws NoSuchFieldException {
-    var items = getArrayArguments(args);
-    var primaryKey = TableUtils.getPrimaryKey(items[0].getClass());
-    assert primaryKey != null;
-    var primaryKeyValues = new StringJoiner(",");
-    for (var item : items) {
-      primaryKeyValues.add(primaryKey.getSqlValue(item).toString());
-    }
     boolean result = false;
     try {
       var statement = database.createStatement();
-      var query = String.format("DELETE FROM %s WHERE %s IN (%s)",
-          TableUtils.getTableName(items[0].getClass()),
-          primaryKey.getName(),
-          primaryKeyValues.toString()
-      );
+      var items = getArrayArguments(args);
+      var query = TableUtils.getDeleteQuery(items);
       result = statement.execute(query);
       statement.close();
     } catch (SQLException exception) {

@@ -36,17 +36,17 @@ public final class TableUtils {
 
   public static <T> String getInsertQuery(T item, OnConflictStrategy onConflictStrategy) {
     var insertedFields = new StringJoiner(",");
-    var insertValues = new StringJoiner(",");
+    var insertedValues = new StringJoiner(",");
     for (Column column : getColumn(item.getClass())) {
       if (column.getValue(item) != null && !column.isAutoIncremented()) {
         insertedFields.add(column.getName());
-        insertValues.add("?");
+        insertedValues.add("?");
       }
     }
     return String.format(
         "INSERT OR %s INTO %s (%s) VALUES (%s);",
         onConflictStrategy.toString(), getTableName(item.getClass()),
-        insertedFields, insertValues);
+        insertedFields, insertedValues);
   }
 
   public static String getUpdateQuery(Object item) throws NoSuchFieldException {
@@ -57,12 +57,24 @@ public final class TableUtils {
       }
     }
     var tableName = getTableName(item.getClass());
-    @SuppressWarnings("ConstantConditions")
-    var primaryKeyName = getPrimaryKey(item.getClass()).getName();
-    @SuppressWarnings("ConstantConditions")
-    var primaryKeyValue = getPrimaryKey(item.getClass()).getSqlValue(item);
+    Column primaryKey = getPrimaryKey(item.getClass());
+    assert primaryKey != null;
     return String.format("UPDATE %s SET %s WHERE %s=%s;",
-        tableName, fieldsAndValues, primaryKeyName, primaryKeyValue
+        tableName, fieldsAndValues, primaryKey.getName(), primaryKey.getSqlValue(item)
+    );
+  }
+
+  public static String getDeleteQuery(Object[] items) throws NoSuchFieldException {
+    var primaryKeyValues = new StringJoiner(",");
+    var primaryKey = getPrimaryKey(items[0].getClass());
+    for (var item : items) {
+      assert primaryKey != null;
+      primaryKeyValues.add(primaryKey.getSqlValue(item).toString());
+    }
+    return String.format("DELETE FROM %s WHERE %s IN (%s)",
+        TableUtils.getTableName(items.getClass()),
+        primaryKey.getName(),
+        primaryKeyValues.toString()
     );
   }
 
