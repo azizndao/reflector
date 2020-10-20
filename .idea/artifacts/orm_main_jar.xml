@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="orm.main:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/orm</output-path>
+    <root id="archive" name="orm.main.jar">
+      <element id="module-output" name="orm.main" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.31.1/56e4d1c3c103ba40abe07510e76314e99614497c/sqlite-jdbc-3.31.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

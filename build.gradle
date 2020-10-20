@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+group 'me.abdou'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.xerial:sqlite-jdbc:3.31.1')
+    testImplementation('junit:junit:4.13')
+}
