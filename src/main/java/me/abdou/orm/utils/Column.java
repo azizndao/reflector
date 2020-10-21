@@ -1,6 +1,6 @@
 package me.abdou.orm.utils;
 
-
+import me.abdou.orm.Database;
 import me.abdou.orm.annotations.ColumnInfo;
 import me.abdou.orm.annotations.ForeignKey;
 import me.abdou.orm.annotations.PrimaryKey;
@@ -22,7 +22,8 @@ public class Column {
   public String getName() {
     if (field.isAnnotationPresent(ColumnInfo.class)) {
       var name = getColumnInfo().name();
-      if (!name.equals("Noe")) return name;
+      if (!name.equals("None"))
+        return name;
     }
     return field.getName();
   }
@@ -50,16 +51,20 @@ public class Column {
 
   public Field getTargetField() throws NoSuchFieldException {
     if (isForeignKey()) {
-      var target = field.getAnnotation(ForeignKey.class).target();
+      ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
+      var target = foreignKey.target();
       return field.getType().getDeclaredField(target);
     }
     return null;
   }
 
   public String getCreateForeignKeyQuery() {
+    ForeignKey ann = field.getAnnotation(ForeignKey.class);
+    var onDeleteStrategy = ann.onDelete();
+    var onUpdateStrategy = ann.onUpdate();
     return String.format(
-        "FOREIGN KEY (%s) REFERENCES %s(%s)",
-        getName(), getTargetTableName(), getTargetFieldName()
+        "FOREIGN KEY (%s) REFERENCES %s(%s) ON DELETE %s ON UPDATE %s", getName(), getTargetTableName(),
+        getTargetFieldName(), onDeleteStrategy, onUpdateStrategy
     );
   }
 

@@ -62,7 +62,7 @@ public abstract class DaoStore {
     return result;
   }
 
-  private static Object invokeInsertMethod(Method method, Object[] args) throws SQLException, NoSuchFieldException {
+  private static boolean invokeInsertMethod(Method method, Object[] args) throws SQLException, NoSuchFieldException {
     var onConflictStrategy = method.getAnnotation(Insert.class).onconflictStrategy();
     Object[] items = getArrayArguments(args);
     var columns = TableUtils.getColumn(items[0].getClass());
@@ -92,7 +92,7 @@ public abstract class DaoStore {
     return result;
   }
 
-  private static Object invokeDeleteMethod(Object[] args) throws NoSuchFieldException {
+  private static boolean invokeDeleteMethod(Object[] args) throws NoSuchFieldException {
     var items = getArrayArguments(args);
     var primaryKey = TableUtils.getPrimaryKey(items[0].getClass());
     assert primaryKey != null;
@@ -116,7 +116,7 @@ public abstract class DaoStore {
     return result;
   }
 
-  private static Object invokeUpdateMethod(Object[] args) throws NoSuchFieldException, SQLException {
+  private static int invokeUpdateMethod(Object[] args) throws NoSuchFieldException, SQLException {
     var items = getArrayArguments(args);
     int result = 0;
     for (Object item : items) {
