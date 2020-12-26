@@ -1,4 +1,5 @@
 .gradle
 build
+bin
 out
 *.sqlite
