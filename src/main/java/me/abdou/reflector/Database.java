@@ -27,6 +27,7 @@ public final class Database {
     return INSTANCE;
   }
 
+  @SuppressWarnings("UnusedReturnValue")
   public static Database connect(String url, Class<?>[] tables) throws SQLException, OrmException {
     var user = new User(url, null, null);
     return connect(user, tables);
